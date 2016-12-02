@@ -6,7 +6,7 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:40 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/02 00:32:43 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/02 01:11:23 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ int		get_next_line(const int fd, char **line)
 	char			*ret;
 	char			*tmp;
 
-	if (init_buffer(buffer))
+	if (init_buffer(&buffer))
 		return (-1);
 	ret = NULL;
-	if (buffer->remaining_data)
+	if (buffer->remaining_data != NULL)
 	{
 		if (is_line_in_buffer(buffer->remaining_data, &tmp) >= 0)
 		{
@@ -63,21 +63,21 @@ int		get_next_line(const int fd, char **line)
 	return (0);
 }
 
-int		init_buffer(t_buffer *buffer)
+int		init_buffer(t_buffer **buffer)
 {
 	static int	call;
 	if (!call)
 	{
-		if (!(buffer = (t_buffer *)malloc(sizeof(t_buffer))))
+		if (!(*buffer = (t_buffer *)malloc(sizeof(t_buffer))))
 			return (1);
-		if (!(buffer->data = ft_strnew(BUFF_SIZE)))
+		if (!((*buffer)->data = ft_strnew(BUFF_SIZE)))
 		{
-			free(buffer);
+			free(*buffer);
 			return (1);
 		}
-		buffer->remaining_data = NULL;
-		buffer->data_length = BUFF_SIZE;
-		buffer->remaining_data_length = 0;
+		(*buffer)->remaining_data = NULL;
+		(*buffer)->data_length = BUFF_SIZE;
+		(*buffer)->remaining_data_length = 0;
 		call++;
 		return (0);
 	}
