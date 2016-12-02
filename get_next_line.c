@@ -6,7 +6,7 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:40 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/02 01:11:23 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/02 04:18:35 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,55 +18,64 @@ int		get_next_line(const int fd, char **line)
 	static t_buffer	*buffer;
 	char			*ret;
 	char			*tmp;
+	int				nb_read;
 
-	if (init_buffer(&buffer))
+	if (!(line) || fd <= 0 || init_buffer(&buffer))
 		return (-1);
 	ret = NULL;
 	if (buffer->remaining_data != NULL)
 	{
-		if (is_line_in_buffer(buffer->remaining_data, &tmp) >= 0)
+		if ((tmp = ft_strchr(buffer->remaining_data, (int)'\n')))
 		{
-			if (!(ret = ft_strnew(tmp - buffer->data)))
+			if (!(ret = ft_strnew(tmp - buffer->remaining_data)))
 				return (-1);
 			ft_strncpy(ret, buffer->remaining_data, tmp - buffer->remaining_data);
 			buffer->remaining_data = tmp + 1;
 			*line = ret;
-			if (*tmp == '\n')
-				return (1);
+			return (1);
+		}
+		else if (buffer->eof)
+		{
+			if (!(ret = ft_strdup(buffer->remaining_data)))
+				return (-1);
+			*line = ret;
+			reset_buffer(buffer);
 			return (0);
 		}
-		if (!(ret = ft_strnew(BUFF_SIZE - (buffer->remaining_data - buffer->data))))
+		else if (!(ret = ft_strnew(BUFF_SIZE - (buffer->remaining_data - buffer->data))))
 			return (-1);
 		ft_strcpy(ret, buffer->remaining_data);
 	}
 	else if (!(ret = ft_strnew(BUFF_SIZE)))
 		return (-1);
-	while (read(fd, (void *)buffer->data, BUFF_SIZE))
+	while ((nb_read = read(fd, (void *)buffer->data, BUFF_SIZE)) >= 0)
 	{
-		if ((tmp = ft_strchr(buffer->data, (int)'\n')) || (tmp = ft_strchr(buffer->data, EOF)))
+		buffer->remaining_data = NULL;
+		if ((tmp = ft_strchr(buffer->data, (int)'\n')))
 		{
-			buffer->remaining_data = NULL;
-			if (*tmp == '\n')
-				buffer->remaining_data = tmp + 1;
+			buffer->remaining_data = tmp + 1;
 			*tmp = '\0';
-			tmp = ret;
-			ret = ft_strjoin(ret, buffer->data);
-			free(tmp);
-			*line = ret;
-			if (buffer->remaining_data)
-				return (1);
-			return (0);
 		}
-		else
-			ft_strjoin(ret, buffer->data);
+		if (nb_read < BUFF_SIZE)
+		{
+			buffer->data[nb_read] = '\0';
+			buffer->eof = 1;
+		}
+		tmp = ret;
+		ret = ft_strjoin(ret, buffer->data);
+		free(tmp);
+		if (buffer->remaining_data != NULL || nb_read < BUFF_SIZE)
+		{
+			*line = ret;
+			return (buffer->remaining_data != NULL);
+		}
 	}
-	return (0);
+	return (-1);
 }
 
 int		init_buffer(t_buffer **buffer)
 {
-	static int	call;
-	if (!call)
+	if (!*buffer)
 	{
 		if (!(*buffer = (t_buffer *)malloc(sizeof(t_buffer))))
 			return (1);
@@ -78,23 +87,14 @@ int		init_buffer(t_buffer **buffer)
 		(*buffer)->remaining_data = NULL;
 		(*buffer)->data_length = BUFF_SIZE;
 		(*buffer)->remaining_data_length = 0;
-		call++;
+		(*buffer)->eof = 0;
 		return (0);
 	}
 	return (0);
 }
 
-int		is_line_in_buffer(char *buffer, char **loc)
+void	reset_buffer(t_buffer *buffer)
 {
-	char *tmp;
-
-	if ((tmp = ft_strchr(buffer, (int)'\n')) || (tmp = ft_strchr(buffer, EOF)))
-	{
-		*loc = tmp;
-		if (*tmp == '\n')
-			return (0);
-		if (*tmp == EOF)
-			return (1);
-	}
-	return (-1);
+	buffer->remaining_data = NULL;
+	buffer->eof = 0;
 }
