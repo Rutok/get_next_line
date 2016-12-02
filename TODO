@@ -1,0 +1,10 @@
+-> Si ya deja du txt en buffer
+	-> Si nb lignes buffer > 1 
+		-> Traitement d'une ligne du buffer
+		-> Return 1
+	-> Si nb lignes buffer = 1
+		-> Si EOF, traitement et return 0
+		-> Sinon traitment et return 1
+	-> Si pas de lignes dans le buffer
+		-> Save des datas restantes du buffer puis lecture
+-> Buffer vide
