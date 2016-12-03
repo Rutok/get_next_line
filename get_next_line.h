@@ -6,7 +6,7 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:32 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/02 04:10:43 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/02 04:20:34 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 
-# define BUFF_SIZE 32
+# define BUFF_SIZE 32000
 
 typedef struct	s_buffer
 {

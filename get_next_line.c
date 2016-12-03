@@ -6,7 +6,7 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:40 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/02 04:18:35 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/02 04:36:13 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ int		get_next_line(const int fd, char **line)
 
 	if (!(line) || fd <= 0 || init_buffer(&buffer))
 		return (-1);
-	ret = NULL;
 	if (buffer->remaining_data != NULL)
 	{
 		if ((tmp = ft_strchr(buffer->remaining_data, (int)'\n')))
@@ -67,7 +66,12 @@ int		get_next_line(const int fd, char **line)
 		if (buffer->remaining_data != NULL || nb_read < BUFF_SIZE)
 		{
 			*line = ret;
-			return (buffer->remaining_data != NULL);
+			if (buffer->remaining_data == &buffer->data[nb_read])
+			{
+				reset_buffer(buffer);
+				return (0);
+			}
+			return (1);
 		}
 	}
 	return (-1);
