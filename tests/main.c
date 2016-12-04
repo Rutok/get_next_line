@@ -6,7 +6,7 @@
 /*   By: nboste <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 00:40:12 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/02 03:31:53 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/04 01:43:00 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ int main(int argc, char **argv)
 	{
 		do
 		{
-			ft_putendl(str);
+			ft_putstr(str);
+			ft_putchar('\n');
 			l = get_next_line(fd, &str);
 			argc++;
 		}
