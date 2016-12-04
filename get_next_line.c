@@ -6,7 +6,7 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:40 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/04 01:42:05 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/04 02:11:10 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	print_buffer(t_buffer *buffer)
 	ft_putendl(".");
 	ft_putstr("strlenremain: ");
 	if (buffer->remaining_data)
-	ft_putnbr(ft_strlen(buffer->remaining_data));
+		ft_putnbr(ft_strlen(buffer->remaining_data));
 	else
 		ft_putstr("NULL");
 	ft_putendl(".");
@@ -42,11 +42,13 @@ int		get_next_line(const int fd, char **line)
 	if (!(ret = ft_strnew(0)))
 		return (-1);
 	nb_read = -1;
+	if (buffer->eof && buffer->remaining_data == NULL)
+		return (0);
 	do
 	{
 		if (nb_read != -1)
 		{
-			buffer->last = buffer->data + nb_read;
+			buffer->last = buffer->data + nb_read - 1;
 			buffer->remaining_data = buffer->data;
 		}
 		if (nb_read < BUFF_SIZE && nb_read != -1)
@@ -54,10 +56,7 @@ int		get_next_line(const int fd, char **line)
 		if (process_buffer(&buffer, &ret))
 		{
 			*line = ret;
-			if (buffer->eof && buffer->remaining_data == NULL)
-				return (0);
-			else
-				return (1);
+			return (1);
 		}
 	}
 	while ((nb_read = read(fd, (void *)buffer->data, BUFF_SIZE)) >= 0);
@@ -103,6 +102,8 @@ int		process_buffer(t_buffer **buffer, char **ret)
 		{
 			*tmp = '\0';
 			(*buffer)->remaining_data = tmp + 1;
+			if (tmp + 1 > (*buffer)->last)
+				(*buffer)->remaining_data = NULL;
 		}
 		else
 		{
@@ -113,7 +114,7 @@ int		process_buffer(t_buffer **buffer, char **ret)
 			return (0);
 		free(tmp);
 		if ((*buffer)->remaining_data != NULL || ((*buffer)->eof && (*buffer)->remaining_data == NULL))
-		return (1);
+			return (1);
 		else
 			return (0);
 	}
