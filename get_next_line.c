@@ -6,7 +6,7 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:40 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/07 23:11:38 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/07 23:17:36 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static t_buffer	*get_buffer(t_list **buffers, int fd)
 	return ((t_buffer *)(*buffers)->content);
 }
 
-static int			process_buffer(t_buffer *buffer, char **ret)
+static int		process_buffer(t_buffer *buffer, char **ret)
 {
 	char	*tmp;
 	char	*rem;
@@ -98,7 +98,7 @@ static int			process_buffer(t_buffer *buffer, char **ret)
 	return (0);
 }
 
-int			get_next_line(const int fd, char **line)
+int				get_next_line(const int fd, char **line)
 {
 	static t_list	*l_buffers;
 	t_buffer		*buffer;
