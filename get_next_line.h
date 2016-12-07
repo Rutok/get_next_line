@@ -6,7 +6,7 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:32 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/07 04:01:19 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/07 22:58:11 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,5 @@ typedef struct	s_buffer
 }				t_buffer;
 
 int				get_next_line(const int fd, char **line);
-
-t_buffer		*get_buffer(t_list **buffers, int fd);
-
-int				process_buffer(t_buffer *buffer, char **ret);
 
 #endif
