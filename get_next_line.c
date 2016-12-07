@@ -6,7 +6,7 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:40 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/07 23:48:53 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/08 00:23:56 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 static void		del_buffer(void *content, size_t content_size)
 {
 	free(((t_buffer *)content)->data);
+	free(((t_buffer *)content));
 	content_size = 0;
 }
 
@@ -69,6 +70,7 @@ static t_buffer	*get_buffer(t_list **buffers, int fd)
 	buffer->last = NULL;
 	buffer->eof = 0;
 	ft_lstadd(buffers, ft_lstnew((void *)buffer, sizeof(t_buffer)));
+	free(buffer);
 	return ((t_buffer *)(*buffers)->content);
 }
 
