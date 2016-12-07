@@ -6,7 +6,7 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:40 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/08 00:23:56 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/08 00:56:32 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void		del_buffer(void *content, size_t content_size)
 {
 	free(((t_buffer *)content)->data);
 	free(((t_buffer *)content));
-	content_size = 0;
+	content_size = content_size + 1;
 }
 
 static int		destroy_return(t_list **buffers, t_buffer **buffer,
@@ -28,7 +28,7 @@ static int		destroy_return(t_list **buffers, t_buffer **buffer,
 
 	tmp = *buffers;
 	prev = NULL;
-	free(*line);
+	ft_strdel(line);
 	while (tmp)
 	{
 		if ((t_buffer *)tmp->content == *buffer)
