@@ -6,30 +6,12 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:40 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/04 02:11:10 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/07 03:04:02 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "libft/libft.h"
-
-void	print_buffer(t_buffer *buffer)
-{
-	ft_putstr("FD: ");
-	ft_putnbr(buffer->fd);
-	ft_putendl(".");
-	ft_putstr("strlenremain: ");
-	if (buffer->remaining_data)
-		ft_putnbr(ft_strlen(buffer->remaining_data));
-	else
-		ft_putstr("NULL");
-	ft_putendl(".");
-	ft_putstr("EOF:");
-	ft_putnbr(buffer->eof);
-	ft_putendl(".");
-	ft_putstr("Buffer Data: ");
-	ft_putnbr(ft_strlen(buffer->data));
-}
 
 int		get_next_line(const int fd, char **line)
 {
@@ -48,18 +30,19 @@ int		get_next_line(const int fd, char **line)
 	{
 		if (nb_read != -1)
 		{
-			buffer->last = buffer->data + nb_read - 1;
+			buffer->last = buffer->data + nb_read;
+			*buffer->last = '\0';
 			buffer->remaining_data = buffer->data;
 		}
-		if (nb_read < BUFF_SIZE && nb_read != -1)
+		if (nb_read != -1 && nb_read < BUFF_SIZE)
 			buffer->eof = 1;
-		if (process_buffer(&buffer, &ret))
+		if (process_buffer(buffer, &ret))
 		{
 			*line = ret;
 			return (1);
 		}
 	}
-	while ((nb_read = read(fd, (void *)buffer->data, BUFF_SIZE)) >= 0);
+	while ((nb_read = read(fd, buffer->data, BUFF_SIZE)) >= 0);
 	return (-1);
 }
 
@@ -90,33 +73,32 @@ t_buffer	*get_buffer(t_list **buffers, int fd)
 	return ((t_buffer *)(*buffers)->content);
 }
 
-int		process_buffer(t_buffer **buffer, char **ret)
+int		process_buffer(t_buffer *buffer, char **ret)
 {
-	char *tmp;
-	char *rem;
+	char	*tmp;
+	char	*rem;
+	int		flag;
 
-	if ((*buffer)->remaining_data != NULL)
+	flag = 0;
+	if (buffer->remaining_data != NULL)
 	{
-		rem = (*buffer)->remaining_data;
-		if ((tmp = ft_strchr((*buffer)->remaining_data, (int)'\n')))
+		rem = buffer->remaining_data;
+		if ((tmp = ft_strchr(buffer->remaining_data, (int)'\n')))
 		{
 			*tmp = '\0';
-			(*buffer)->remaining_data = tmp + 1;
-			if (tmp + 1 > (*buffer)->last)
-				(*buffer)->remaining_data = NULL;
+			buffer->remaining_data  = tmp + 1 >= buffer->last ? NULL : tmp + 1;
+			flag = 1;
 		}
-		else
+		else if (buffer->eof)
 		{
-			(*buffer)->remaining_data = NULL;
+			buffer->remaining_data = NULL;
+			flag = 1;
 		}
 		tmp = *ret;
 		if (!(*ret = ft_strjoin(*ret, rem)))
 			return (0);
 		free(tmp);
-		if ((*buffer)->remaining_data != NULL || ((*buffer)->eof && (*buffer)->remaining_data == NULL))
-			return (1);
-		else
-			return (0);
+		return (flag);
 	}
 	return (0);
 }
