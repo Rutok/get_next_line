@@ -6,7 +6,7 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:40 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/07 23:17:36 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/07 23:48:53 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,22 +19,24 @@ static void		del_buffer(void *content, size_t content_size)
 	content_size = 0;
 }
 
-static int		destroy_return(t_list **buffers, t_buffer **buffer, int ret)
+static int		destroy_return(t_list **buffers, t_buffer **buffer,
+				char **line, int ret)
 {
 	t_list	*tmp;
 	t_list	*prev;
 
 	tmp = *buffers;
 	prev = NULL;
+	free(*line);
 	while (tmp)
 	{
 		if ((t_buffer *)tmp->content == *buffer)
 		{
 			if (prev != NULL)
 				prev->next = tmp->next;
-			else
-				*buffers = NULL;
 			ft_lstdelone(&tmp, del_buffer);
+			if (prev == NULL)
+				*buffers = NULL;
 			return (ret);
 		}
 		prev = tmp;
@@ -107,15 +109,14 @@ int				get_next_line(const int fd, char **line)
 	if (!line || !(*line = ft_strnew(0)) || fd < 0)
 		return (-1);
 	buffer = get_buffer(&l_buffers, fd);
-	nb_read = -1;
 	if (buffer->eof && buffer->remaining_data == NULL)
-		return (destroy_return(&l_buffers, &buffer, 0));
+		return (destroy_return(&l_buffers, &buffer, line, 0));
 	if (process_buffer(buffer, line))
 		return (1);
 	while ((nb_read = read(fd, buffer->data, BUFF_SIZE)) >= 0)
 	{
-		if (nb_read == 0 && !ft_strlen(*line))
-			return (destroy_return(&l_buffers, &buffer, 0));
+		if (nb_read == 0 && **line == '\0')
+			return (destroy_return(&l_buffers, &buffer, line, 0));
 		buffer->last = buffer->data + nb_read;
 		*buffer->last = '\0';
 		buffer->remaining_data = buffer->data;
@@ -124,5 +125,5 @@ int				get_next_line(const int fd, char **line)
 		if (process_buffer(buffer, line))
 			return (1);
 	}
-	return (-1);
+	return (destroy_return(&l_buffers, &buffer, line, -1));
 }
