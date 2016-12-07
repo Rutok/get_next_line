@@ -6,7 +6,7 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:40 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/07 03:04:02 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/07 03:31:36 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ int		get_next_line(const int fd, char **line)
 		return (0);
 	do
 	{
+		if (nb_read == 0 && !ft_strlen(ret))
+			return (0);
 		if (nb_read != -1)
 		{
 			buffer->last = buffer->data + nb_read;
