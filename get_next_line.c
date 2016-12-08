@@ -6,12 +6,11 @@
 /*   By: nboste <nboste@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/01 22:03:40 by nboste            #+#    #+#             */
-/*   Updated: 2016/12/08 00:56:32 by nboste           ###   ########.fr       */
+/*   Updated: 2016/12/08 01:08:18 by nboste           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include "libft/libft.h"
 
 static void		del_buffer(void *content, size_t content_size)
 {
